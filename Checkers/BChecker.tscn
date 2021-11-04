@@ -5,7 +5,7 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 32, 32 )
 
-[node name="BChecker" type="KinematicBody2D" groups=[
+[node name="BChecker" type="Area2D" groups=[
 "Black",
 "Standard",
 ]]
