@@ -68,6 +68,13 @@ func update_board():
 
 
 func move_peice(initial_coord: Vector2, destination: Vector2):
+#	if(current_turn == true):
+#		if((current_board[initial_coord][0] != 2) or (current_board[initial_coord][0] != 4)):
+#			return
+#	else:
+#		if((current_board[initial_coord][0] != 1) or (current_board[initial_coord][0] != 3)):
+#			return
+	
 	if(current_board[destination][0] != 0):
 		print("tile is filled")
 		return
@@ -91,7 +98,7 @@ func _unhandled_input(event):
 		var world_click_pos = event.position
 		var map_cell_pos = $Board.world_to_map(world_click_pos)
 		
-		if((map_cell_pos.x >= 8) or (map_cell_pos.y >= 8)):
+		if((map_cell_pos.x >= 8) or (map_cell_pos.y >= 8) or (map_cell_pos.x < 0) or (map_cell_pos.y < 0)):
 			if(selecting_destination == true):
 				selecting_destination = false
 			return
@@ -128,5 +135,23 @@ func new_game():
 	current_turn = true
 
 
-func _on_Button_pressed():
+func _on_NewGame_pressed():
 	new_game()
+
+#true is black, false is white
+func can_jump(check_position: Vector2, team:bool, is_king: bool):
+	if(is_king == false):
+		var jump_locations := []
+		#black
+		if(team == true):
+			var tiles_to_check = [check_position + Vector2(1,1), check_position + Vector2(-1,1)]
+			
+			for possible_location in tiles_to_check:
+				if(not((possible_location.x >= 8) or (possible_location.y >= 8) or (possible_location.x < 0) or (possible_location.y < 0))):
+					pass
+		
+		#white
+		if(team == false):
+			pass
+
+
