@@ -147,10 +147,15 @@ func can_jump(check_position: Vector2, team:bool, is_king: bool):
 		
 		#black team
 		if(team == true):
-			var tiles_to_check = [
-				check_position + Vector2(1,1),
-				check_position + Vector2(-1,1)
-			]
+			
+			var tiles_to_check = {
+				(check_position + Vector2(1,1)): (check_position + Vector2(2,2)),
+				(check_position + Vector2(-1,1)): (check_position + Vector2(-2,2))
+			}
+			
+			
+			
+			
 			
 			for possible_location in tiles_to_check:
 				if(
@@ -163,3 +168,10 @@ func can_jump(check_position: Vector2, team:bool, is_king: bool):
 			pass
 
 
+func is_tile_filled(tile: Vector2):
+	if(current_board[tile][0] == 0):
+		return([false, 0])
+	elif(current_board[tile][0] == (1 or 3)):
+		return([true, "white"])
+	elif(current_board[tile][0] == (2 or 4)):
+		return([true, "black"])
