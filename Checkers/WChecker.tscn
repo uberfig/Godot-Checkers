@@ -3,9 +3,9 @@
 [ext_resource path="res://Checkers/assets/white checker.png" type="Texture" id=1]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 32, 32 )
+extents = Vector2( 24, 24 )
 
-[node name="WChecker" type="Area2D" groups=[
+[node name="WChecker" type="KinematicBody2D" groups=[
 "Standard",
 "White",
 ]]

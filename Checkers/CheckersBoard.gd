@@ -5,8 +5,8 @@ extends Node2D
 #even is black, 4 is king
 var current_board: Dictionary = {}
 
-onready var w_peices_remaining: int = $W.get_child_count()
-onready var b_peices_remaining: int = $B.get_child_count()
+#onready var w_peices_remaining: int = $W.get_child_count()
+#onready var b_peices_remaining: int = $B.get_child_count()
 
 var selecting_destination := false
 var selected_tile: Vector2
@@ -37,8 +37,8 @@ func empty_board():
 
 
 func update_board():
-	b_peices_remaining = black_team_ref.get_child_count()
-	w_peices_remaining = white_team_ref.get_child_count()
+#	b_peices_remaining = black_team_ref.get_child_count()
+#	w_peices_remaining = white_team_ref.get_child_count()
 	
 	var b_children = black_team_ref.get_children()
 	for b_child in b_children:
@@ -141,13 +141,21 @@ func _on_NewGame_pressed():
 #true is black, false is white
 func can_jump(check_position: Vector2, team:bool, is_king: bool):
 	if(is_king == false):
-		var jump_locations := []
-		#black
+		#we will spawn a marker at each viable location which when cliked will
+		#move the peice to that location
+		var viable_locations := []
+		
+		#black team
 		if(team == true):
-			var tiles_to_check = [check_position + Vector2(1,1), check_position + Vector2(-1,1)]
+			var tiles_to_check = [
+				check_position + Vector2(1,1),
+				check_position + Vector2(-1,1)
+			]
 			
 			for possible_location in tiles_to_check:
-				if(not((possible_location.x >= 8) or (possible_location.y >= 8) or (possible_location.x < 0) or (possible_location.y < 0))):
+				if(
+					not((possible_location.x >= 8) or (possible_location.y >= 8) or (possible_location.x < 0) or (possible_location.y < 0))
+				):
 					pass
 		
 		#white
