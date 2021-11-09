@@ -33,7 +33,7 @@ func _ready():
 func empty_board():
 	for y in 8:
 		for x in 8:
-			current_board[Vector2(x, y)] = [0, null]
+			current_board[Vector2(x, y)] = [false, null, "", false]
 
 
 func update_board():
@@ -47,9 +47,9 @@ func update_board():
 #		print("black tile at: ", coord)
 	
 		if(b_child.is_in_group("Standard")):
-			current_board[coord] = [2, b_child]
+			current_board[coord] = [true, b_child, "black", false]#3 is for if it is a king
 		elif(b_child.is_in_group("King")):
-			current_board[coord] = [4, b_child]
+			current_board[coord] = [true, b_child, "black", true]
 		else:
 			print("there is a weird checker at: ", coord)
 	
@@ -60,9 +60,9 @@ func update_board():
 #		print("white tile at: ", coord)
 		
 		if(w_child.is_in_group("Standard")):
-			current_board[coord] = [1, w_child]
+			current_board[coord] = [true, w_child, "white", false]
 		elif(w_child.is_in_group("King")):
-			current_board[coord] = [3, w_child]
+			current_board[coord] = [true, w_child, "white", true]
 		else:
 			print("there is a weird checker at: ", coord)
 
@@ -75,7 +75,7 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 #		if((current_board[initial_coord][0] != 1) or (current_board[initial_coord][0] != 3)):
 #			return
 	
-	if(current_board[destination][0] != 0):
+	if(current_board[destination][0] == true):
 		print("tile is filled")
 		return
 	else:
@@ -89,7 +89,7 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 #		transfer the values
 		current_board[destination][0] = current_board[initial_coord][0]
 		current_board[destination][1] = current_board[initial_coord][1]
-		current_board[initial_coord][0] = 0
+		current_board[initial_coord][0] = false
 		current_board[initial_coord][1] = null
 
 
@@ -103,7 +103,7 @@ func _unhandled_input(event):
 				selecting_destination = false
 			return
 		
-		if((current_board[map_cell_pos][0] == 0) && (selecting_destination == false)):
+		if((current_board[map_cell_pos][0] == false) && (selecting_destination == false)):
 			return
 		
 		if selecting_destination == false:
@@ -139,14 +139,18 @@ func _on_NewGame_pressed():
 	new_game()
 
 #true is black, false is white
-func can_jump(check_position: Vector2, team:bool, is_king: bool):
+func can_jump(check_position: Vector2):
+	
+	var team = is_tile_filled(check_position)[1]
+	var is_king = is_tile_filled(check_position)[2]
+	
 	if(is_king == false):
 		#we will spawn a marker at each viable location which when cliked will
 		#move the peice to that location
 		var viable_locations := []
 		
 		#black team
-		if(team == true):
+		if(team == "black"):
 			
 			var tiles_to_check = {
 				(check_position + Vector2(1,1)): (check_position + Vector2(2,2)),
@@ -164,14 +168,16 @@ func can_jump(check_position: Vector2, team:bool, is_king: bool):
 					pass
 		
 		#white
-		if(team == false):
+		if(team == "black"):
 			pass
+
+
+func check_adjacent(tile: Vector2, vector_direction: Vector2):
+	var adjacent: bool = current_board[(tile + vector_direction)][0]
 
 
 func is_tile_filled(tile: Vector2):
 	if(current_board[tile][0] == 0):
-		return([false, 0])
-	elif(current_board[tile][0] == (1 or 3)):
-		return([true, "white"])
-	elif(current_board[tile][0] == (2 or 4)):
-		return([true, "black"])
+		return([false, current_board[tile][2], current_board[tile][3]])
+	else:
+		return([true, current_board[tile][2], current_board[tile][3]])
