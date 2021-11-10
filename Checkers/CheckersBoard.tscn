@@ -55,6 +55,8 @@ __meta__ = {
 
 [node name="B" parent="." instance=ExtResource( 5 )]
 
+[node name="ViableLocations" type="Node2D" parent="."]
+
 [node name="Tween" type="Tween" parent="."]
 
 [node name="NewGame" type="Button" parent="."]
