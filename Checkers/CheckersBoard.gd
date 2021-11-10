@@ -10,12 +10,14 @@ var current_board: Dictionary = {}
 
 var selecting_destination := false
 var selected_tile: Vector2
+var public_viable_locations:= {}
 
 #if true it is black's turn if false it is white's turn
 var current_turn:= true
 
 onready var white_team = preload("res://Checkers/WhiteTeam.tscn")
 onready var black_team = preload("res://Checkers/BlackTeam.tscn")
+onready var move_marker = preload("res://Checkers/PossibleMoveMarker.tscn")
 onready var white_team_ref =$W
 onready var black_team_ref =$B
 
@@ -91,6 +93,8 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 		current_board[destination][1] = current_board[initial_coord][1]
 		current_board[initial_coord][0] = false
 		current_board[initial_coord][1] = null
+	
+	public_viable_locations = {}
 
 
 func _unhandled_input(event):
@@ -161,7 +165,6 @@ func can_jump(check_position: Vector2):
 	
 	if(is_king == true):
 		directions_to_check = [Vector2(1,1), Vector2(-1,1), Vector2(1,-1), Vector2(-1,-1)]
-
 	
 	for direction in directions_to_check:
 		var adjacent_data = check_adjacent_for_move(check_position, direction)
@@ -174,6 +177,16 @@ func can_jump(check_position: Vector2):
 		
 		if((adjacent_data[0] == true) and (adjacent_data[1] == true)):
 			viable_locations[adjacent_data[2][2]] = [true, adjacent_data[2][1]]
+	
+	public_viable_locations = viable_locations
+
+
+func show_possible_moves():
+	for position in 
+	var marker_instance = move_marker.instance()
+	marker_instance.set_positio
+	var position: Vector2 = $Board.world_to_map(position)
+	add_child(marker_instance)
 
 
 func kill_checker(tile):
