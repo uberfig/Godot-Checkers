@@ -171,9 +171,29 @@ func can_jump(check_position: Vector2):
 		if(team == "black"):
 			pass
 
-
+#0 is if it is filled, 2 is by whom
 func check_adjacent(tile: Vector2, vector_direction: Vector2):
-	var adjacent: bool = current_board[(tile + vector_direction)][0]
+	var adjacent_tile: Vector2 = (tile + vector_direction)
+	var jump_tile: Vector2 = (tile + (vector_direction * 2))
+	var my_color: String = current_board[tile][2]
+	
+	if(
+		not((adjacent_tile.x >= 8) or (adjacent_tile.y >= 8) or (adjacent_tile.x < 0) or (adjacent_tile.y < 0))
+	):
+		return([false]) #the tile is outside of the board; cannot move this way
+	
+	if(current_board[adjacent_tile][0] == false):
+		return([true, false, [tile, adjacent_tile]])#the tile is within the board and empty
+	
+	if(current_board[adjacent_tile][2] == my_color):
+		return([false])#the tile is filled with a friendly; cannot move this way
+	
+	if(current_board[adjacent_tile][2] != my_color):
+		if(current_board[jump_tile][0] == false):
+			return([true, true, [tile, adjacent_tile, jump_tile]])
+			#the tile is filled with an enemy and there isn't a unit behind it; can jump
+		else:
+			return([false])#the tile is filled with a guarded enemy
 
 
 func is_tile_filled(tile: Vector2):
