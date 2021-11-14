@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Checkers/assets/black tile.jpg" type="Texture" id=1]
 [ext_resource path="res://Checkers/assets/white tile.jpg" type="Texture" id=2]
 [ext_resource path="res://Checkers/CheckersBoard.gd" type="Script" id=3]
 [ext_resource path="res://Checkers/WhiteTeam.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Checkers/BlackTeam.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Checkers/Cursor.tscn" type="PackedScene" id=6]
 
 [sub_resource type="TileSet" id=3]
 0/name = "black tile.jpg 0"
@@ -81,5 +82,7 @@ text = "End Turn"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Cursor" parent="." instance=ExtResource( 6 )]
 
 [connection signal="pressed" from="NewGame" to="." method="_on_NewGame_pressed"]

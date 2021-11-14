@@ -8,6 +8,22 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Node2D",
+"class": "Cursor",
+"language": "GDScript",
+"path": "res://Checkers/Cursor.gd"
+}, {
+"base": "Resource",
+"class": "Grid",
+"language": "GDScript",
+"path": "res://Checkers/Grid.gd"
+} ]
+_global_script_class_icons={
+"Cursor": "",
+"Grid": ""
+}
+
 [application]
 
 config/name="Godot Checkers"

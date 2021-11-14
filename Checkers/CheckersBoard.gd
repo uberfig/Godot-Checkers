@@ -95,6 +95,8 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 		print("current_board[initial_coord] = ", current_board[initial_coord])
 		clear_tile_data(initial_coord)
 		print("current_board[initial_coord] = ", current_board[initial_coord])
+		
+		
 		end_turn()
 	
 	public_viable_locations = {}
@@ -128,7 +130,7 @@ func _unhandled_input(event):
 		
 		if((current_board[map_cell_pos][0] == false) && (selecting_destination == false)):
 			return
-
+		
 		if selecting_destination == false:
 			selecting_destination = true
 #			print("selecting destination")
