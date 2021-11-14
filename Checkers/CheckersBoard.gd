@@ -73,6 +73,7 @@ func update_board():
 
 
 func move_peice(initial_coord: Vector2, destination: Vector2):
+#	print(current_board)
 	if(current_board[initial_coord][2] != teams[turn_index]):
 		print("not ", current_board[initial_coord][2], "'s move! waiting for ", teams[turn_index], " to move")
 		return
@@ -90,7 +91,10 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 #		transfer the values
 #		current_board in format tile: [is occupied, refrence, color, is king]
 		current_board[destination] = current_board[initial_coord]
+		print("current_board[destination] = ", current_board[destination])
+		print("current_board[initial_coord] = ", current_board[initial_coord])
 		clear_tile_data(initial_coord)
+		print("current_board[initial_coord] = ", current_board[initial_coord])
 		end_turn()
 	
 	public_viable_locations = {}
@@ -99,7 +103,7 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 
 func end_turn():
 	turn_index += 1
-	if(turn_index > teams.size()):
+	if(turn_index > (teams.size() - 1)):
 		turn_index = 0
 
 
