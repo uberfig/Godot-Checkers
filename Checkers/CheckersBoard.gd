@@ -4,7 +4,7 @@ extends Node2D
 #odd is white, 3 is king
 #even is black, 4 is king
 var current_board: Dictionary = {}
-
+#in format tile: [is occupied, refrence, color, is king]
 #onready var w_peices_remaining: int = $W.get_child_count()
 #onready var b_peices_remaining: int = $B.get_child_count()
 
@@ -13,8 +13,9 @@ var selected_tile: Vector2
 var public_viable_locations:= {}
 #contents will be formated {destination: [is_jumping, starting_point, jumped_tile(if applicable)]}
 
-#if true it is black's turn if false it is white's turn
-var current_turn:= true
+#we can use this as a state machine
+var teams = ["black", "white"]
+var turn_index: int = 0
 
 onready var white_team = preload("res://Checkers/WhiteTeam.tscn")
 onready var black_team = preload("res://Checkers/BlackTeam.tscn")
@@ -37,6 +38,7 @@ func empty_board():
 	for y in 8:
 		for x in 8:
 			current_board[Vector2(x, y)] = [false, null, "", false]
+#in format is occupied, refrence, color, is king
 
 
 func update_board():
@@ -71,7 +73,9 @@ func update_board():
 
 
 func move_peice(initial_coord: Vector2, destination: Vector2):
-	
+	if(current_board[initial_coord][2] != teams[turn_index]):
+		print("not ", current_board[initial_coord][2], "'s move! waiting for ", teams[turn_index], " to move")
+		return
 	if(current_board[destination][0] == true):
 		print("tile is filled")
 		return
@@ -84,13 +88,23 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 		Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 		$Tween.start()
 #		transfer the values
-		current_board[destination][0] = current_board[initial_coord][0]
-		current_board[destination][1] = current_board[initial_coord][1]
-		current_board[initial_coord][0] = false
-		current_board[initial_coord][1] = null
+#		current_board in format tile: [is occupied, refrence, color, is king]
+		current_board[destination] = current_board[initial_coord]
+		clear_tile_data(initial_coord)
+		end_turn()
 	
 	public_viable_locations = {}
 #contents will be formated {destination: [is_jumping, starting_point, jumped_tile(if applicable)]}
+
+
+func end_turn():
+	turn_index += 1
+	if(turn_index > teams.size()):
+		turn_index = 0
+
+
+func clear_tile_data(tile):
+	current_board[tile] = [false, null, "", false]
 
 
 func _unhandled_input(event):
@@ -98,12 +112,16 @@ func _unhandled_input(event):
 		var world_click_pos = event.position
 		var map_cell_pos = $Board.world_to_map(world_click_pos)
 		
+		print("unhandled event @", map_cell_pos)
+		
 		
 		if((map_cell_pos.x >= 8) or (map_cell_pos.y >= 8) or (map_cell_pos.x < 0) or (map_cell_pos.y < 0)):
 			if(selecting_destination == true):
 				selecting_destination = false
 			return
-
+		
+		print("location details: ", current_board[map_cell_pos])
+		
 		if((current_board[map_cell_pos][0] == false) && (selecting_destination == false)):
 			return
 
@@ -141,7 +159,6 @@ func new_game():
 		child.queue_free()
 	
 	update_board()
-	current_turn = true
 
 
 func _on_NewGame_pressed():
@@ -177,8 +194,10 @@ func position_move_data(check_position: Vector2):
 	for direction in directions_to_check:
 #		print("checking direction: ", direction)
 		var adjacent_data = check_adjacent_for_move(check_position, direction)
-#		print("adjacent data: ", adjacent_data)
 		#in format [can_move, can_jump, [tile, adjacent_tile, jump_tile]]
+		print("adjacent_data in for loop at 183: ", adjacent_data)
+#		print("adjacent data: ", adjacent_data)
+		
 #		if(adjacent_data[0] == false):
 #			print("breaking because adjacent_data = ", adjacent_data)
 #			print("at direction: ", direction)
@@ -247,7 +266,7 @@ func check_adjacent_for_move(tile: Vector2, vector_direction: Vector2):
 		((adjacent_tile.x >= 8) or (adjacent_tile.y >= 8) or (adjacent_tile.x < 0) or (adjacent_tile.y < 0))
 	):
 #		print("outside board")
-		return([false]) #the tile is outside of the board; cannot move this way
+		return([false, false]) #the tile is outside of the board; cannot move this way
 		
 	
 	if(current_board[adjacent_tile][0] == false):
@@ -261,17 +280,22 @@ func check_adjacent_for_move(tile: Vector2, vector_direction: Vector2):
 #		print("-------------------current board----------------------")
 #		print(current_board)
 #		print("-------------------current board----------------------")
-		return([false])#the tile is filled with a friendly; cannot move this way
+		return([false, false])#the tile is filled with a friendly; cannot move this way
 		
 	
 	if(current_board[adjacent_tile][2] != my_color):
+		if(
+			((jump_tile.x >= 8) or (jump_tile.y >= 8) or (jump_tile.x < 0) or (jump_tile.y < 0))
+		):
+			return([false, false]) 
+			#the tile is on the edge of the board
 		if(current_board[jump_tile][0] == false):
 #			print("can jump")
 			return([true, true, [tile, adjacent_tile, jump_tile]])
 			#the tile is filled with an enemy and there isn't a unit behind it; can jump
 		else:
 #			print("jump is guarded")
-			return([false])#the tile is filled with a guarded enemy
+			return([false, false])#the tile is filled with a guarded enemy
 
 
 func is_tile_filled(tile: Vector2):
@@ -280,3 +304,9 @@ func is_tile_filled(tile: Vector2):
 	else:
 		return([true, current_board[tile][2], current_board[tile][3]])
 
+
+
+## warning-ignore:unused_argument
+## warning-ignore:unused_argument
+#func _on_Tween_tween_completed(object, key):
+#	update_board()
