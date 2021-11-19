@@ -331,6 +331,19 @@ func _on_Cursor_accept_pressed(cell):
 #			print("public_viable_locations: ", public_viable_locations)
 		show_possible_moves()
 	else:
+		if(public_viable_locations.has(cell)):
+			var coord_data = public_viable_locations[cell]
+			if(coord_data[0] == false):
+				move_peice(coord_data[1], cell)
+			
+			if(coord_data[0] == true):
+				move_peice(coord_data[1], cell)
+				kill_checker(coord_data[2])
+			
+			selecting_destination = false
+			clear_move_markers()
+			public_viable_locations = {}
+		
 		selecting_destination = false
 		clear_move_markers()
 #			if selected_tile == map_cell_pos:
