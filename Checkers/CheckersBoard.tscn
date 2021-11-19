@@ -52,6 +52,8 @@ __meta__ = {
 "_edit_lock_": true
 }
 
+[node name="Cursor" parent="." instance=ExtResource( 6 )]
+
 [node name="W" parent="." instance=ExtResource( 4 )]
 
 [node name="B" parent="." instance=ExtResource( 5 )]
@@ -83,7 +85,5 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Cursor" parent="." instance=ExtResource( 6 )]
-
-[connection signal="pressed" from="NewGame" to="." method="_on_NewGame_pressed"]
 [connection signal="accept_pressed" from="Cursor" to="." method="_on_Cursor_accept_pressed"]
+[connection signal="pressed" from="NewGame" to="." method="_on_NewGame_pressed"]

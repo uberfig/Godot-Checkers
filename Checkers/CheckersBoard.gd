@@ -228,7 +228,7 @@ func show_possible_moves():
 		
 		marker_instance.set_position(world_position)
 		$ViableLocations.add_child(marker_instance)
-		marker_instance.connect("clicked", self, "on_move_marker_pressed")
+#		marker_instance.connect("clicked", self, "on_move_marker_pressed")
 #		print("instanced and connected marker")
 
 
