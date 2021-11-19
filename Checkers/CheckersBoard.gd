@@ -201,7 +201,7 @@ func position_move_data(check_position: Vector2):
 #		print("checking direction: ", direction)
 		var adjacent_data = check_adjacent_for_move(check_position, direction)
 		#in format [can_move, can_jump, [tile, adjacent_tile, jump_tile]]
-		print("adjacent_data in for loop at 183: ", adjacent_data)
+#		print("adjacent_data in for loop at 183: ", adjacent_data)
 #		print("adjacent data: ", adjacent_data)
 		
 #		if(adjacent_data[0] == false):
@@ -323,6 +323,9 @@ func _on_Cursor_accept_pressed(cell):
 	
 	if((current_board[cell][0] == false) && (selecting_destination == false)):
 		return
+	
+	if(current_board[cell][2] != ):
+		pass
 	
 	if selecting_destination == false:
 		selecting_destination = true
