@@ -316,3 +316,25 @@ func is_tile_filled(tile: Vector2):
 ## warning-ignore:unused_argument
 #func _on_Tween_tween_completed(object, key):
 #	update_board()
+
+
+func _on_Cursor_accept_pressed(cell):
+	print("location details: ", current_board[cell])
+	
+	if((current_board[cell][0] == false) && (selecting_destination == false)):
+		return
+	
+	if selecting_destination == false:
+		selecting_destination = true
+#			print("selecting destination")
+		position_move_data(cell)
+#			print("public_viable_locations: ", public_viable_locations)
+		show_possible_moves()
+	else:
+		selecting_destination = false
+		clear_move_markers()
+#			if selected_tile == map_cell_pos:
+#				selecting_destination = false
+#			else:
+#				move_peice(selected_tile, map_cell_pos)
+#				selecting_destination = false
