@@ -28,7 +28,8 @@ _global_script_class_icons={
 
 config/name="Godot Checkers"
 run/main_scene="res://Checkers/CheckersBoard.tscn"
-config/icon="res://icon.png"
+config/icon="res://Checkers/assets/Game Icon.png"
+config/windows_native_icon="res://Checkers/assets/Game Icon.ico"
 
 [editor_plugins]
 
