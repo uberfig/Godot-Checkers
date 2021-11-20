@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Checkers/assets/black tile.jpg" type="Texture" id=1]
 [ext_resource path="res://Checkers/assets/white tile.jpg" type="Texture" id=2]
@@ -6,6 +6,9 @@
 [ext_resource path="res://Checkers/WhiteTeam.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Checkers/BlackTeam.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Checkers/Cursor.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Checkers/assets/background.jpg" type="Texture" id=7]
+[ext_resource path="res://Checkers/assets/New Game.png" type="Texture" id=8]
+[ext_resource path="res://Checkers/assets/New Game Pressed.png" type="Texture" id=9]
 
 [sub_resource type="TileSet" id=3]
 0/name = "black tile.jpg 0"
@@ -62,12 +65,15 @@ __meta__ = {
 
 [node name="Tween" type="Tween" parent="."]
 
-[node name="NewGame" type="Button" parent="."]
-margin_left = 536.0
-margin_top = 24.0
-margin_right = 624.0
-margin_bottom = 44.0
-text = "new game"
+[node name="NewGame" type="TextureButton" parent="."]
+margin_left = 528.0
+margin_top = 16.0
+margin_right = 632.0
+margin_bottom = 56.0
+texture_normal = ExtResource( 8 )
+texture_pressed = ExtResource( 9 )
+expand = true
+stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -77,10 +83,24 @@ margin_left = 536.0
 margin_top = 64.0
 margin_right = 599.0
 margin_bottom = 84.0
-hint_tooltip = "If you jump a player and you still have the ability to jump
+hint_tooltip = "If you jump a player and you still have the ability to jump,
 but you want to end your turn you can click here"
 disabled = true
 text = "End Turn"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource( 7 )
+expand = true
+stretch_mode = 7
 __meta__ = {
 "_edit_use_anchors_": false
 }

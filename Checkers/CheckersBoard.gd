@@ -162,6 +162,7 @@ func new_game():
 		child.queue_free()
 	
 	update_board()
+	turn_index = 0
 
 
 func _on_NewGame_pressed():
