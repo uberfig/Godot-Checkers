@@ -74,9 +74,6 @@ func update_board():
 
 func move_peice(initial_coord: Vector2, destination: Vector2):
 #	print(current_board)
-	if(current_board[initial_coord][2] != teams[turn_index]):
-		print("not ", current_board[initial_coord][2], "'s move! waiting for ", teams[turn_index], " to move")
-		return
 	if(current_board[destination][0] == true):
 		print("tile is filled")
 		return
@@ -265,29 +262,20 @@ func check_adjacent_for_move(tile: Vector2, vector_direction: Vector2):
 	var jump_tile: Vector2 = (tile + (vector_direction * 2))
 	var my_color: String = current_board[tile][2]
 	
-#	print("checking adjacent to: ", tile, " with direction: ", vector_direction)
-#	print("adjacent tile: ", adjacent_tile, " jump tile: ", jump_tile, " my color: ", my_color)
-	
 	if(
 		((adjacent_tile.x >= 8) or (adjacent_tile.y >= 8) or (adjacent_tile.x < 0) or (adjacent_tile.y < 0))
 	):
-#		print("outside board")
 		return([false, false]) #the tile is outside of the board; cannot move this way
-		
+	
 	
 	if(current_board[adjacent_tile][0] == false):
 #		print("adjacent is empty")
 		return([true, false, [tile, adjacent_tile]])#the tile is within the board and empty
-		
+	
 	
 	if(current_board[adjacent_tile][2] == my_color):
-#		print("adjacent is friendly")
-#		print("adjacent color: ", current_board[adjacent_tile][2], " | my color: ", my_color)
-#		print("-------------------current board----------------------")
-#		print(current_board)
-#		print("-------------------current board----------------------")
 		return([false, false])#the tile is filled with a friendly; cannot move this way
-		
+	
 	
 	if(current_board[adjacent_tile][2] != my_color):
 		if(
@@ -300,7 +288,6 @@ func check_adjacent_for_move(tile: Vector2, vector_direction: Vector2):
 			return([true, true, [tile, adjacent_tile, jump_tile]])
 			#the tile is filled with an enemy and there isn't a unit behind it; can jump
 		else:
-#			print("jump is guarded")
 			return([false, false])#the tile is filled with a guarded enemy
 
 
@@ -311,21 +298,15 @@ func is_tile_filled(tile: Vector2):
 		return([true, current_board[tile][2], current_board[tile][3]])
 
 
-
-## warning-ignore:unused_argument
-## warning-ignore:unused_argument
-#func _on_Tween_tween_completed(object, key):
-#	update_board()
-
-
 func _on_Cursor_accept_pressed(cell):
 	print("location details: ", current_board[cell])
 	
 	if((current_board[cell][0] == false) && (selecting_destination == false)):
 		return
 	
-	if(current_board[cell][2] != ):
-		pass
+	if((selecting_destination == false) && (current_board[cell][2] != teams[turn_index])):
+		print("not ", current_board[cell][2], "'s move! waiting for ", teams[turn_index], " to move")
+		return
 	
 	if selecting_destination == false:
 		selecting_destination = true
