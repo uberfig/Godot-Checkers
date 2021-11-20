@@ -5,8 +5,8 @@ extends Node2D
 #even is black, 4 is king
 var current_board: Dictionary = {}
 #in format tile: [is occupied, refrence, color, is king]
-#onready var w_peices_remaining: int = $W.get_child_count()
-#onready var b_peices_remaining: int = $B.get_child_count()
+onready var w_peices_remaining: int = $W.get_child_count()
+onready var b_peices_remaining: int = $B.get_child_count()
 
 var selecting_destination := false
 var selected_tile: Vector2
@@ -45,8 +45,8 @@ func empty_board():
 
 
 func update_board():
-#	b_peices_remaining = black_team_ref.get_child_count()
-#	w_peices_remaining = white_team_ref.get_child_count()
+	b_peices_remaining = black_team_ref.get_child_count()
+	w_peices_remaining = white_team_ref.get_child_count()
 	
 	var b_children = black_team_ref.get_children()
 	for b_child in b_children:
@@ -85,7 +85,7 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 		var current_pos = ($Board.map_to_world(initial_coord) + Vector2(32,32))
 		var destination_global = ($Board.map_to_world(destination) + Vector2(32,32))
 		$Tween.interpolate_property(current_board[initial_coord][1], "position",
-		current_pos, destination_global, 1.1,
+		current_pos, destination_global, 1.2,
 		Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 		$Tween.start()
 #		transfer the values
@@ -268,6 +268,8 @@ func clear_move_markers():
 func kill_checker(tile):
 	current_board[tile][1].queue_free()
 	current_board[tile] = [false, null, "", false]
+	b_peices_remaining = black_team_ref.get_child_count()
+	w_peices_remaining = white_team_ref.get_child_count()
 
 
 #0 is if it is filled, 2 is by whom
