@@ -241,23 +241,6 @@ func show_possible_moves():
 		
 		marker_instance.set_position(world_position)
 		$ViableLocations.add_child(marker_instance)
-#		marker_instance.connect("clicked", self, "on_move_marker_pressed")
-#		print("instanced and connected marker")
-
-
-func on_move_marker_pressed(refrence):
-	var coord = $Board.world_to_map(refrence.get_position())
-	var coord_data = public_viable_locations[coord]
-	if(coord_data[0] == false):
-		move_peice(coord_data[1], coord)
-	
-	if(coord_data[0] == true):
-		move_peice(coord_data[1], coord)
-		kill_checker(coord_data[2])
-	
-	selecting_destination = false
-	clear_move_markers()
-	public_viable_locations = {}
 
 
 func clear_move_markers():
