@@ -22,6 +22,9 @@ onready var black_team = preload("res://Checkers/BlackTeam.tscn")
 onready var move_marker = preload("res://Checkers/PossibleMoveMarker.tscn")
 onready var white_team_ref =$W
 onready var black_team_ref =$B
+onready var black_king = preload("res://Checkers/BKing.tscn")
+onready var white_king = preload("res://Checkers/WKing.tscn")
+
 
 
 func _ready():
@@ -82,19 +85,30 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 		var current_pos = ($Board.map_to_world(initial_coord) + Vector2(32,32))
 		var destination_global = ($Board.map_to_world(destination) + Vector2(32,32))
 		$Tween.interpolate_property(current_board[initial_coord][1], "position",
-		current_pos, destination_global, 1.5,
+		current_pos, destination_global, 1.1,
 		Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 		$Tween.start()
 #		transfer the values
 #		current_board in format tile: [is occupied, refrence, color, is king]
 		current_board[destination] = current_board[initial_coord]
-		print("current_board[destination] = ", current_board[destination])
-		print("current_board[initial_coord] = ", current_board[initial_coord])
+#		print("current_board[destination] = ", current_board[destination])
+#		print("current_board[initial_coord] = ", current_board[initial_coord])
+		var team = current_board[initial_coord][2]
 		clear_tile_data(initial_coord)
-		print("current_board[initial_coord] = ", current_board[initial_coord])
-		
 		
 		end_turn()
+		
+		yield($Tween, "tween_completed")
+		if((team == "white") && (destination.y == 7)):
+			king_me(destination)
+		if((team == "black") && (destination.y == 0)):
+			king_me(destination)
+		
+		
+#		print("current_board[initial_coord] = ", current_board[initial_coord])
+		
+		
+		
 	
 	public_viable_locations = {}
 #contents will be formated {destination: [is_jumping, starting_point, jumped_tile(if applicable)]}
@@ -297,6 +311,25 @@ func is_tile_filled(tile: Vector2):
 		return([false, current_board[tile][2], current_board[tile][3]])
 	else:
 		return([true, current_board[tile][2], current_board[tile][3]])
+
+
+func king_me(tile):
+	var world_pos = ($Board.map_to_world(tile) + Vector2(32,32))
+	
+	current_board[tile][3] = true
+	current_board[tile][1].queue_free()
+	
+	if(current_board[tile][2] == "black"):
+		var king_instance = black_king.instance()
+		king_instance.set_position(world_pos)
+		black_team_ref.add_child(king_instance)
+		current_board[tile][1] = king_instance
+		
+	if(current_board[tile][2] == "white"):
+		var king_instance = white_king.instance()
+		king_instance.set_position(world_pos)
+		white_team_ref.add_child(king_instance)
+		current_board[tile][1] = king_instance
 
 
 func _on_Cursor_accept_pressed(cell):
