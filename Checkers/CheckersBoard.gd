@@ -8,6 +8,9 @@ var current_board: Dictionary = {}
 onready var w_peices_remaining: int = $W.get_child_count()
 onready var b_peices_remaining: int = $B.get_child_count()
 
+var multijump_mode:= false
+var multijump_cell: Vector2
+
 var selecting_destination := false
 var selected_tile: Vector2
 var public_viable_locations:= {}
@@ -95,8 +98,6 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 #		print("current_board[initial_coord] = ", current_board[initial_coord])
 		var team = current_board[initial_coord][2]
 		clear_tile_data(initial_coord)
-		
-		end_turn()
 		
 		if((team == "white") && (destination.y == 7)):
 			yield($Tween, "tween_completed")
@@ -208,19 +209,10 @@ func position_move_data(check_position: Vector2):
 	if(is_king == true):
 		directions_to_check = [Vector2(1,1), Vector2(-1,1), Vector2(1,-1), Vector2(-1,-1)]
 	
-#	print("directions to check: ", directions_to_check)
-	
 	for direction in directions_to_check:
 #		print("checking direction: ", direction)
 		var adjacent_data = check_adjacent_for_move(check_position, direction)
 		#in format [can_move, can_jump, [tile, adjacent_tile, jump_tile]]
-#		print("adjacent_data in for loop at 183: ", adjacent_data)
-#		print("adjacent data: ", adjacent_data)
-		
-#		if(adjacent_data[0] == false):
-#			print("breaking because adjacent_data = ", adjacent_data)
-#			print("at direction: ", direction)
-#			break
 		
 		if((adjacent_data[0] == true) and (adjacent_data[1] == false)):
 			viable_locations[adjacent_data[2][1]] = [false, check_position]
@@ -234,13 +226,73 @@ func position_move_data(check_position: Vector2):
 	public_viable_locations = viable_locations
 
 
+func check_for_jump(tile):
+	
+	var team = is_tile_filled(tile)[1]
+	var is_king = is_tile_filled(tile)[2]
+	
+	var directions_to_check:= []
+	
+	if(is_king == false):
+		#black team
+		if(team == "black"):
+			directions_to_check = [Vector2(1,-1), Vector2(-1,-1)]
+		#white
+		if(team == "white"):
+			directions_to_check = [Vector2(1,1), Vector2(-1,1)]
+	
+	if(is_king == true):
+		directions_to_check = [Vector2(1,1), Vector2(-1,1), Vector2(1,-1), Vector2(-1,-1)]
+	
+	for direction in directions_to_check:
+#		print("checking direction: ", direction)
+		var adjacent_data = check_adjacent_for_move(tile, direction)
+		#in format [can_move, can_jump, [tile, adjacent_tile, jump_tile]]
+		if((adjacent_data[0] == true) and (adjacent_data[1] == true)):
+			return(true)
+	return(false)
+
+
+func search_for_jumps_only(tile):
+	
+	var team = is_tile_filled(tile)[1]
+	var is_king = is_tile_filled(tile)[2]
+	
+	var viable_locations := {}
+	var directions_to_check:= []
+	
+	if(is_king == false):
+		#black team
+		if(team == "black"):
+			directions_to_check = [Vector2(1,-1), Vector2(-1,-1)]
+		#white
+		if(team == "white"):
+			directions_to_check = [Vector2(1,1), Vector2(-1,1)]
+	
+	if(is_king == true):
+		directions_to_check = [Vector2(1,1), Vector2(-1,1), Vector2(1,-1), Vector2(-1,-1)]
+	
+	for direction in directions_to_check:
+#		print("checking direction: ", direction)
+		var adjacent_data = check_adjacent_for_move(tile, direction)
+		#in format [can_move, can_jump, [tile, adjacent_tile, jump_tile]]
+		if((adjacent_data[0] == true) and (adjacent_data[1] == true)):
+			viable_locations[adjacent_data[2][2]] = [true, tile, adjacent_data[2][1]]
+	
+	
+	public_viable_locations = viable_locations
+
+
+func spawn_move_marker(coord):
+	var world_position: Vector2 = ($Board.map_to_world(coord) + Vector2(32, 32))
+	var marker_instance = move_marker.instance()
+	marker_instance.set_position(world_position)
+	$ViableLocations.add_child(marker_instance)
+
+
 func show_possible_moves():
 	for coord in public_viable_locations:
-		var world_position: Vector2 = ($Board.map_to_world(coord) + Vector2(32, 32))
-		var marker_instance = move_marker.instance()
-		
-		marker_instance.set_position(world_position)
-		$ViableLocations.add_child(marker_instance)
+		spawn_move_marker(coord)
 
 
 func clear_move_markers():
@@ -270,7 +322,6 @@ func check_adjacent_for_move(tile: Vector2, vector_direction: Vector2):
 	
 	
 	if(current_board[adjacent_tile][0] == false):
-#		print("adjacent is empty")
 		return([true, false, [tile, adjacent_tile]])#the tile is within the board and empty
 	
 	
@@ -285,7 +336,6 @@ func check_adjacent_for_move(tile: Vector2, vector_direction: Vector2):
 			return([false, false]) 
 			#the tile is on the edge of the board
 		if(current_board[jump_tile][0] == false):
-#			print("can jump")
 			return([true, true, [tile, adjacent_tile, jump_tile]])
 			#the tile is filled with an enemy and there isn't a unit behind it; can jump
 		else:
@@ -321,37 +371,73 @@ func king_me(tile):
 func _on_Cursor_accept_pressed(cell):
 	print("location details: ", current_board[cell])
 	
+	#check if empty
 	if((current_board[cell][0] == false) && (selecting_destination == false)):
 		return
 	
+	#check team
 	if((selecting_destination == false) && (current_board[cell][2] != teams[turn_index])):
 		print("not ", current_board[cell][2], "'s move! waiting for ", teams[turn_index], " to move")
 		return
 	
-	if selecting_destination == false:
+	#check if selecting is false
+	if((selecting_destination == false) && (multijump_mode == false)):
 		selecting_destination = true
-#			print("selecting destination")
 		position_move_data(cell)
-#			print("public_viable_locations: ", public_viable_locations)
 		show_possible_moves()
-	else:
+		return
+	
+	elif((selecting_destination == false) && (multijump_mode == true)):
+		show_possible_moves()
+		selecting_destination = true
+		print("public_viable_locations", public_viable_locations)
+		print("returning because (selecting_destination == false) && (multijump_mode == true)")
+		return
+	
+	elif(selecting_destination == true):
 		if(public_viable_locations.has(cell)):
 			var coord_data = public_viable_locations[cell]
-			if(coord_data[0] == false):
-				move_peice(coord_data[1], cell)
+#contents of public_viable_locations will be formated 
+#{destination: [is_jumping, starting_point, jumped_tile(if applicable)]}
 			
-			if(coord_data[0] == true):
+#contents of coord_data will be formated 
+#[is_jumping, starting_point, jumped_tile(if applicable)]
+			if(coord_data[0] == false):#not jumping
+				move_peice(coord_data[1], cell)
+				end_turn()
+			
+			if(coord_data[0] == true):#jumping
 				move_peice(coord_data[1], cell)
 				kill_checker(coord_data[2])
+				
+				var can_multijump = check_for_jump(cell)
+				
+				if(can_multijump == false):#can't jump again
+					multijump_mode = false
+					$EndTurn.disabled = true
+					end_turn()
+					public_viable_locations = {}
+				
+				if(can_multijump == true):#can multijump
+					multijump_mode = true
+					$EndTurn.disabled = false
+					multijump_cell = cell
+					search_for_jumps_only(cell)
+					selecting_destination = false
 			
 			selecting_destination = false
 			clear_move_markers()
-			public_viable_locations = {}
+			
 		
 		selecting_destination = false
 		clear_move_markers()
-#			if selected_tile == map_cell_pos:
-#				selecting_destination = false
-#			else:
-#				move_peice(selected_tile, map_cell_pos)
-#				selecting_destination = false
+		return
+	
+	print("cursor unhandled")
+
+
+func _on_EndTurn_pressed():
+	end_turn()
+	selecting_destination = false
+	$EndTurn.disabled = true
+	multijump_mode = false

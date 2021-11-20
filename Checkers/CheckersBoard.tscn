@@ -107,3 +107,4 @@ __meta__ = {
 
 [connection signal="accept_pressed" from="Cursor" to="." method="_on_Cursor_accept_pressed"]
 [connection signal="pressed" from="NewGame" to="." method="_on_NewGame_pressed"]
+[connection signal="pressed" from="EndTurn" to="." method="_on_EndTurn_pressed"]
