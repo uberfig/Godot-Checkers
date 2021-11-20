@@ -28,12 +28,12 @@ _global_script_class_icons={
 
 config/name="Godot Checkers"
 run/main_scene="res://Checkers/CheckersBoard.tscn"
-config/icon="res://Checkers/assets/Game Icon.png"
-config/windows_native_icon="res://Checkers/assets/Game Icon.ico"
+config/icon="res://Checkers/assets/GameIcon.png"
+config/windows_native_icon="res://Checkers/assets/icon.ico"
 
 [editor_plugins]
 
-enabled=PoolStringArray(  )
+enabled=PoolStringArray( "res://addons/build-and-deploy/plugin.cfg" )
 
 [input]
 
