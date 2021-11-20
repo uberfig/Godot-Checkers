@@ -98,10 +98,11 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 		
 		end_turn()
 		
-		yield($Tween, "tween_completed")
 		if((team == "white") && (destination.y == 7)):
+			yield($Tween, "tween_completed")
 			king_me(destination)
 		if((team == "black") && (destination.y == 0)):
+			yield($Tween, "tween_completed")
 			king_me(destination)
 		
 		
