@@ -5,10 +5,7 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 32, 32 )
 
-[node name="BKing" type="Area2D" groups=[
-"King",
-"White",
-]]
+[node name="BKing" type="KinematicBody2D" groups=["Black", "King"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )

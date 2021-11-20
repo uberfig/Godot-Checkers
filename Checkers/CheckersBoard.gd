@@ -74,9 +74,6 @@ func update_board():
 
 func move_peice(initial_coord: Vector2, destination: Vector2):
 #	print(current_board)
-	if(current_board[initial_coord][2] != teams[turn_index]):
-		print("not ", current_board[initial_coord][2], "'s move! waiting for ", teams[turn_index], " to move")
-		return
 	if(current_board[destination][0] == true):
 		print("tile is filled")
 		return
@@ -95,6 +92,8 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 		print("current_board[initial_coord] = ", current_board[initial_coord])
 		clear_tile_data(initial_coord)
 		print("current_board[initial_coord] = ", current_board[initial_coord])
+		
+		
 		end_turn()
 	
 	public_viable_locations = {}
@@ -128,7 +127,7 @@ func _unhandled_input(event):
 		
 		if((current_board[map_cell_pos][0] == false) && (selecting_destination == false)):
 			return
-
+		
 		if selecting_destination == false:
 			selecting_destination = true
 #			print("selecting destination")
@@ -163,6 +162,7 @@ func new_game():
 		child.queue_free()
 	
 	update_board()
+	turn_index = 0
 
 
 func _on_NewGame_pressed():
@@ -199,7 +199,7 @@ func position_move_data(check_position: Vector2):
 #		print("checking direction: ", direction)
 		var adjacent_data = check_adjacent_for_move(check_position, direction)
 		#in format [can_move, can_jump, [tile, adjacent_tile, jump_tile]]
-		print("adjacent_data in for loop at 183: ", adjacent_data)
+#		print("adjacent_data in for loop at 183: ", adjacent_data)
 #		print("adjacent data: ", adjacent_data)
 		
 #		if(adjacent_data[0] == false):
@@ -226,7 +226,7 @@ func show_possible_moves():
 		
 		marker_instance.set_position(world_position)
 		$ViableLocations.add_child(marker_instance)
-		marker_instance.connect("clicked", self, "on_move_marker_pressed")
+#		marker_instance.connect("clicked", self, "on_move_marker_pressed")
 #		print("instanced and connected marker")
 
 
@@ -263,29 +263,20 @@ func check_adjacent_for_move(tile: Vector2, vector_direction: Vector2):
 	var jump_tile: Vector2 = (tile + (vector_direction * 2))
 	var my_color: String = current_board[tile][2]
 	
-#	print("checking adjacent to: ", tile, " with direction: ", vector_direction)
-#	print("adjacent tile: ", adjacent_tile, " jump tile: ", jump_tile, " my color: ", my_color)
-	
 	if(
 		((adjacent_tile.x >= 8) or (adjacent_tile.y >= 8) or (adjacent_tile.x < 0) or (adjacent_tile.y < 0))
 	):
-#		print("outside board")
 		return([false, false]) #the tile is outside of the board; cannot move this way
-		
+	
 	
 	if(current_board[adjacent_tile][0] == false):
 #		print("adjacent is empty")
 		return([true, false, [tile, adjacent_tile]])#the tile is within the board and empty
-		
+	
 	
 	if(current_board[adjacent_tile][2] == my_color):
-#		print("adjacent is friendly")
-#		print("adjacent color: ", current_board[adjacent_tile][2], " | my color: ", my_color)
-#		print("-------------------current board----------------------")
-#		print(current_board)
-#		print("-------------------current board----------------------")
 		return([false, false])#the tile is filled with a friendly; cannot move this way
-		
+	
 	
 	if(current_board[adjacent_tile][2] != my_color):
 		if(
@@ -298,7 +289,6 @@ func check_adjacent_for_move(tile: Vector2, vector_direction: Vector2):
 			return([true, true, [tile, adjacent_tile, jump_tile]])
 			#the tile is filled with an enemy and there isn't a unit behind it; can jump
 		else:
-#			print("jump is guarded")
 			return([false, false])#the tile is filled with a guarded enemy
 
 
@@ -309,8 +299,40 @@ func is_tile_filled(tile: Vector2):
 		return([true, current_board[tile][2], current_board[tile][3]])
 
 
-
-## warning-ignore:unused_argument
-## warning-ignore:unused_argument
-#func _on_Tween_tween_completed(object, key):
-#	update_board()
+func _on_Cursor_accept_pressed(cell):
+	print("location details: ", current_board[cell])
+	
+	if((current_board[cell][0] == false) && (selecting_destination == false)):
+		return
+	
+	if((selecting_destination == false) && (current_board[cell][2] != teams[turn_index])):
+		print("not ", current_board[cell][2], "'s move! waiting for ", teams[turn_index], " to move")
+		return
+	
+	if selecting_destination == false:
+		selecting_destination = true
+#			print("selecting destination")
+		position_move_data(cell)
+#			print("public_viable_locations: ", public_viable_locations)
+		show_possible_moves()
+	else:
+		if(public_viable_locations.has(cell)):
+			var coord_data = public_viable_locations[cell]
+			if(coord_data[0] == false):
+				move_peice(coord_data[1], cell)
+			
+			if(coord_data[0] == true):
+				move_peice(coord_data[1], cell)
+				kill_checker(coord_data[2])
+			
+			selecting_destination = false
+			clear_move_markers()
+			public_viable_locations = {}
+		
+		selecting_destination = false
+		clear_move_markers()
+#			if selected_tile == map_cell_pos:
+#				selecting_destination = false
+#			else:
+#				move_peice(selected_tile, map_cell_pos)
+#				selecting_destination = false
