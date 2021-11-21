@@ -100,9 +100,11 @@ func move_peice(initial_coord: Vector2, destination: Vector2):
 		clear_tile_data(initial_coord)
 		
 		if((team == "white") && (destination.y == 7)):
+			current_board[destination][3] = true
 			yield($Tween, "tween_completed")
 			king_me(destination)
 		if((team == "black") && (destination.y == 0)):
+			current_board[destination][3] = true
 			yield($Tween, "tween_completed")
 			king_me(destination)
 		
@@ -388,10 +390,10 @@ func _on_Cursor_accept_pressed(cell):
 		return
 	
 	elif((selecting_destination == false) && (multijump_mode == true)):
+		if (multijump_mode == true):
+			search_for_jumps_only(cell)
 		show_possible_moves()
 		selecting_destination = true
-		print("public_viable_locations", public_viable_locations)
-		print("returning because (selecting_destination == false) && (multijump_mode == true)")
 		return
 	
 	elif(selecting_destination == true):
@@ -427,7 +429,7 @@ func _on_Cursor_accept_pressed(cell):
 			
 			selecting_destination = false
 			clear_move_markers()
-			
+			return
 		
 		selecting_destination = false
 		clear_move_markers()
@@ -441,3 +443,4 @@ func _on_EndTurn_pressed():
 	selecting_destination = false
 	$EndTurn.disabled = true
 	multijump_mode = false
+	clear_move_markers()
