@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Checkers/assets/black tile.jpg" type="Texture" id=1]
 [ext_resource path="res://Checkers/assets/white tile.jpg" type="Texture" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://Checkers/assets/background.jpg" type="Texture" id=7]
 [ext_resource path="res://Checkers/assets/New Game.png" type="Texture" id=8]
 [ext_resource path="res://Checkers/assets/New Game Pressed.png" type="Texture" id=9]
+[ext_resource path="res://Checkers/assets/End Turn.png" type="Texture" id=10]
+[ext_resource path="res://Checkers/assets/End Turn Disabled.png" type="Texture" id=11]
 
 [sub_resource type="TileSet" id=3]
 0/name = "black tile.jpg 0"
@@ -78,15 +80,17 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="EndTurn" type="Button" parent="."]
-margin_left = 536.0
+[node name="EndTurn" type="TextureButton" parent="."]
+margin_left = 528.0
 margin_top = 64.0
-margin_right = 599.0
-margin_bottom = 84.0
-hint_tooltip = "If you jump a player and you still have the ability to jump,
-but you want to end your turn you can click here"
+margin_right = 632.0
+margin_bottom = 104.0
 disabled = true
-text = "End Turn"
+texture_normal = ExtResource( 10 )
+texture_pressed = ExtResource( 11 )
+texture_disabled = ExtResource( 11 )
+expand = true
+stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -102,6 +106,7 @@ texture = ExtResource( 7 )
 expand = true
 stretch_mode = 7
 __meta__ = {
+"_edit_lock_": true,
 "_edit_use_anchors_": false
 }
 
